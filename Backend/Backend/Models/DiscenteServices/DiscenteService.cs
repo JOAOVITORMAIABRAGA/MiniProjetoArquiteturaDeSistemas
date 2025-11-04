@@ -1,6 +1,6 @@
-﻿using backend.DataSources;
-using backend.Models;
-using Backend.Models;
+﻿using Backend.Models;
+using Backend.Models.DiscenteServices;
+using backend.DataSources;
 
 namespace Backend.Models.DiscenteServices
 {
@@ -15,21 +15,27 @@ namespace Backend.Models.DiscenteServices
             _dbSource = dbSource;
         }
 
-        // usado no DataSeeder → pega da AWS e escreve no DB
         public async Task<List<Discente>> ImportarDiscentesDaAws()
         {
             return await _awsSource.ImportarParaBancoAsync(_dbSource);
         }
 
-        // usado pelos Controllers → pega DO BANCO
-        public async Task<List<Discente>> GetDiscentes()
-        {
-            return await _dbSource.GetAllAsync();
-        }
+        public async Task<List<Discente>> GetDiscentes() =>
+            await _dbSource.GetAllAsync();
 
-        public async Task<Discente?> GetDiscenteById(int id)
+        public async Task<Discente?> GetDiscenteById(int id) =>
+            await _dbSource.GetByIdAsync(id);
+
+        public async Task<(bool success, string message)> AlterarStatusAsync(int id, string novoStatus)
         {
-            return await _dbSource.GetByIdAsync(id);
+            var discente = await _dbSource.GetByIdAsync(id);
+            if (discente == null)
+                return (false, "Discente não encontrado.");
+
+            discente.Status = novoStatus;
+            await _dbSource.UpdateAsync(discente);
+
+            return (true, $"Status atualizado para: {novoStatus}");
         }
     }
 }

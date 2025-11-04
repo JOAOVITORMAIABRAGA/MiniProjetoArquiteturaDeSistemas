@@ -42,16 +42,18 @@ namespace Backend.Controllers
             return Ok("Livro reservado com sucesso.");
         }
 
-        // DELETE: api/LivroReserva/cancelar
-        [HttpDelete("cancelar")]
-        public async Task<ActionResult> Cancelar([FromBody] ReservaRequest request)
+        // DELETE: api/Reserva/cancelar/1/5
+        [HttpDelete("cancelar/{discenteId:int}/{livroId:int}")]
+        public async Task<ActionResult> Cancelar(int discenteId, int livroId)
         {
-            var success = await _reservaService.CancelarReservaAsync(request.DiscenteId, request.LivroId);
+            var success = await _reservaService.CancelarReservaAsync(discenteId, livroId);
+
             if (!success)
                 return NotFound("Reserva não encontrada.");
 
             return Ok("Reserva cancelada com sucesso.");
         }
+
     }
 
     // DTO para requisições de reserva

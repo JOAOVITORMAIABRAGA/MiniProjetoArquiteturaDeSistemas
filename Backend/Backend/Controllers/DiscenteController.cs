@@ -29,8 +29,20 @@ namespace backend.Controllers
         {
             var discente = await _service.GetDiscenteById(id);
             if (discente == null)
-                return NotFound();
+                return NotFound("Discente não encontrado.");
             return Ok(discente);
+        }
+
+        // PUT api/discente/5/status
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> AlterarStatus(int id, [FromBody] string novoStatus)
+        {
+            var (success, message) = await _service.AlterarStatusAsync(id, novoStatus);
+
+            if (!success)
+                return NotFound(message);
+
+            return Ok(message);
         }
     }
 }

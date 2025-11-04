@@ -35,6 +35,15 @@ namespace Backend.Models.DisciplinaAlunoServices
         // Matricular um aluno em uma disciplina
         public async Task<bool> MatricularAlunoAsync(int discenteId, int disciplinaId)
         {
+            // ✅ Verifica se aluno existe
+            var discente = await _context.Discentes.FirstOrDefaultAsync(d => d.Id == discenteId);
+            if (discente == null)
+                return false;
+
+            // ✅ Verifica status ("Ativo" pode, outros NÃO podem)
+            if (!string.Equals(discente.Status, "Ativo", StringComparison.OrdinalIgnoreCase))
+                return false;
+
             // Verifica se já está matriculado
             var exists = await _context.DisciplinaAluno
                 .AnyAsync(da => da.DiscenteId == discenteId && da.DisciplinaId == disciplinaId);

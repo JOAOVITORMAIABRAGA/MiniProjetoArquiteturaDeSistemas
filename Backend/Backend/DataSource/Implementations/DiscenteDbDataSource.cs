@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace backend.DataSources
 {
-    public class DiscenteDbDataSource : IDataSource<Discente>
+    public class DiscenteDbDataSource : IDataSource<Discente>, IWriteDataSource<Discente>
     {
         private readonly AppDbContext _context;
 
@@ -25,7 +25,14 @@ namespace backend.DataSources
             return await _context.Discentes.FindAsync(id);
         }
 
-        // Função extra específica do DB para salvar múltiplos registros
+        // ✅ Novo método exigido pela interface
+        public async Task UpdateAsync(Discente discente)
+        {
+            _context.Discentes.Update(discente);
+            await _context.SaveChangesAsync();
+        }
+
+        // (Uso interno, opcional)
         public async Task SaveRangeAsync(List<Discente> discentes)
         {
             _context.Discentes.AddRange(discentes);

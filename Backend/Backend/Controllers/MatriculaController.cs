@@ -43,16 +43,18 @@ namespace Backend.Controllers
             return Ok("Aluno matriculado com sucesso.");
         }
 
-        // DELETE: api/Matricula/cancelar
-        [HttpDelete("cancelar")]
-        public async Task<ActionResult> Cancelar([FromBody] MatriculaRequest request)
+        // DELETE: api/Matricula/cancelar/1/3
+        [HttpDelete("cancelar/{discenteId:int}/{disciplinaId:int}")]
+        public async Task<ActionResult> Cancelar(int discenteId, int disciplinaId)
         {
-            var success = await _matriculaService.CancelarMatriculaAsync(request.DiscenteId, request.DisciplinaId);
+            var success = await _matriculaService.CancelarMatriculaAsync(discenteId, disciplinaId);
+
             if (!success)
                 return NotFound("Matrícula não encontrada.");
 
             return Ok("Matrícula cancelada com sucesso.");
         }
+
     }
 
     // DTO para requisições de matrícula

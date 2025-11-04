@@ -34,6 +34,15 @@ namespace Backend.Models.LivroReservaService
         // Reservar um livro
         public async Task<bool> ReservarLivroAsync(int discenteId, int livroId)
         {
+            // ✅ Verifica se aluno existe
+            var discente = await _context.Discentes.FirstOrDefaultAsync(d => d.Id == discenteId);
+            if (discente == null)
+                return false;
+
+            // ✅ Verifica status do discente (somente "Ativo" pode reservar)
+            if (!string.Equals(discente.Status, "Ativo", StringComparison.OrdinalIgnoreCase))
+                return false;
+
             // Verifica se já existe reserva
             var exists = await _context.LivroReserva
                 .AnyAsync(lr => lr.DiscenteId == discenteId && lr.LivroId == livroId);
