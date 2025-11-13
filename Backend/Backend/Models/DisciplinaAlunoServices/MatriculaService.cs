@@ -33,6 +33,8 @@ namespace Backend.Models.DisciplinaAlunoServices
         }
 
         // Matricular um aluno em uma disciplina
+        // Matricular um aluno em uma disciplina
+        // Matricular um aluno em uma disciplina
         public async Task<bool> MatricularAlunoAsync(int discenteId, int disciplinaId)
         {
             // ✅ Verifica se aluno existe
@@ -44,19 +46,28 @@ namespace Backend.Models.DisciplinaAlunoServices
             if (!string.Equals(discente.Status, "Ativo", StringComparison.OrdinalIgnoreCase))
                 return false;
 
-            // Verifica se já está matriculado
+            // ✅ Verifica se já está matriculado nessa disciplina
             var exists = await _context.DisciplinaAluno
                 .AnyAsync(da => da.DiscenteId == discenteId && da.DisciplinaId == disciplinaId);
-
             if (exists)
                 return false; // Já matriculado
 
-            // Verifica se disciplina existe e se ainda há vagas
+            // ✅ Verifica quantidade de disciplinas em que o aluno já está matriculado
+            var totalMatriculas = await _context.DisciplinaAluno
+                .CountAsync(da => da.DiscenteId == discenteId);
+            if (totalMatriculas >= 5)
+                return false; // ❌ Aluno já atingiu o limite de 5 disciplinas
+
+            // ✅ Verifica se disciplina existe e se ainda há vagas
             var disciplina = await _context.Disciplinas.FindAsync(disciplinaId);
             if (disciplina == null || disciplina.Vagas <= 0)
                 return false;
 
-            // Adiciona matrícula
+            // ✅ Verifica se o curso do aluno é o mesmo da disciplina
+            if (discente.Curso != disciplina.Curso)
+                return false; // ❌ Aluno tentando se matricular em disciplina de outro curso
+
+            // ✅ Adiciona matrícula
             var matricula = new DisciplinaAluno
             {
                 DiscenteId = discenteId,
@@ -65,12 +76,14 @@ namespace Backend.Models.DisciplinaAlunoServices
 
             _context.DisciplinaAluno.Add(matricula);
 
-            // Atualiza vagas
+            // ✅ Atualiza vagas
             disciplina.Vagas -= 1;
 
             await _context.SaveChangesAsync();
             return true;
         }
+
+
 
         // Cancelar matrícula
         public async Task<bool> CancelarMatriculaAsync(int discenteId, int disciplinaId)
