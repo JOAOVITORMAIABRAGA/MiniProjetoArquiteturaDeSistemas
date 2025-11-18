@@ -13,17 +13,26 @@ O projeto é uma aplicação full-stack que utiliza uma arquitetura MVC no backe
 O projeto segue a arquitetura Model-View-Controller (MVC), um estilo arquitetural que promove a separação de responsabilidades.
 
 -Model: Representa os dados e a lógica de negócios. (Classes de modelo, contextos de banco de dados, etc.)
+
 -View: Responsável pela apresentação dos dados, ou seja, a interface do usuário. Neste projeto, a camada de View é implementada utilizando React.
+
 -Controller: Atua como intermediário, processando as requisições do usuário, interagindo com o Model e selecionando a View apropriada para exibir a resposta.
+
 Embora nenhum padrão de projeto de software específico tenha sido aplicado além do próprio MVC, a estrutura do código segue um design padrão e modular para garantir a manutenção e escalabilidade.
+
 
 ⚙️ Instruções de Execução
 
 Para executar o projeto localmente, siga os passos abaixo:
+
 -Abra o Visual Studio e o Visual Studio Code;
+
 -Rode o backend no Visual Studio para que os dados sejam puxados e criado o banco de dados;
+
 -Rode o frontend no Visual Studio Code utilizando "npm run dev"
+
 -Control + click no link do local host
+
 
 Pré-requisitos
 Certifique-se de ter instalado em sua máquina:
