@@ -29,12 +29,5 @@ namespace backend.DataSources
             return all.Find(l => l.Id == id);
         }
 
-        // Função extra: importa da AWS e grava no DB (paralelo ao Discente)
-        public async Task<List<Livro>> ImportarParaBancoAsync(LivroDbDataSource dbSource)
-        {
-            var livros = await GetAllAsync();
-            await dbSource.SaveRangeAsync(livros);
-            return livros;
-        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using backend.DataSources;
 using backend.Models;
-using Backend.Models;
+using System.Text.Json;
 
 namespace Backend.Models.DisciplinaServices
 {
@@ -15,21 +15,40 @@ namespace Backend.Models.DisciplinaServices
             _dbSource = dbSource;
         }
 
-        // usado no DataSeeder → pega da AWS e escreve no DB
         public async Task<List<Disciplina>> ImportarDisciplinasDaAws()
         {
-            return await _awsSource.ImportarParaBancoAsync(_dbSource);
+            try
+            {
+                var disciplinas = await _awsSource.GetAllAsync();
+
+                if (disciplinas == null || disciplinas.Count == 0)
+                {
+                    // Em vez de lançar uma exceção, retorne uma lista vazia.
+                    return new List<Disciplina>();
+                }
+
+                await _dbSource.SaveRangeAsync(disciplinas);
+
+                return disciplinas;
+            }
+            catch (JsonException ex)
+            {
+                // Em vez de lançar uma exceção, logue o erro (opcional) e retorne uma lista vazia.
+                Console.WriteLine($"Erro ao desserializar o JSON de disciplinas: {ex.Message}");
+                return new List<Disciplina>();
+            }
+            catch (Exception ex)
+            {
+                // Em vez de lançar uma exceção geral, logue o erro (opcional) e retorne uma lista vazia.
+                Console.WriteLine($"Erro ao importar disciplinas da AWS: {ex.Message}");
+                return new List<Disciplina>();
+            }
         }
 
-        // usado pelos Controllers → pega DO BANCO
-        public async Task<List<Disciplina>> GetDisciplinas()
-        {
-            return await _dbSource.GetAllAsync();
-        }
+        public async Task<List<Disciplina>> GetDisciplinas() =>
+            await _dbSource.GetAllAsync();
 
-        public async Task<Disciplina?> GetDisciplinaById(int id)
-        {
-            return await _dbSource.GetByIdAsync(id);
-        }
+        public async Task<Disciplina?> GetDisciplinaById(int id) =>
+            await _dbSource.GetByIdAsync(id);
     }
 }

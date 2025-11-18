@@ -27,12 +27,5 @@ namespace backend.DataSources
             return all.Find(d => d.Id == id);
         }
 
-        // Função extra específica da implementação AWS
-        public async Task<List<Discente>> ImportarParaBancoAsync(DiscenteDbDataSource dbSource)
-        {
-            var discentes = await GetAllAsync();
-            await dbSource.SaveRangeAsync(discentes);
-            return discentes;
-        }
     }
 }
